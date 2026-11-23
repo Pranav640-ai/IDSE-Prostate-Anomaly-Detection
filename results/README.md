@@ -4,4 +4,3 @@ The CSV contains the results from the original full experiment described in the 
 
 The slide-screening test uses 29 eligible slides. The patch-level test uses 1,404 patches, including 179 labelled G5. Within-slide AUROC was evaluated separately on six mixed slides.
 
-The recorded numbers should not be treated as new measurements from a small-sample smoke test.
