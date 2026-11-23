@@ -63,7 +63,6 @@ Open `notebooks/IDSE.ipynb` in Kaggle, attach the [SICAPv2 dataset](https://www.
 
 - `notebooks/IDSE.ipynb`: main notebook
 - `report/IDSE_report.pdf`: project report
-- `results/figures/`: plots and patch visualizations from the full experiment
+- [`results/figures/`](results/figures/README.md): plots and patch visualizations from the experiments
 - `results/recorded_metrics.csv`: recorded evaluation metrics
-- `requirements.txt`: Python dependencies
 
