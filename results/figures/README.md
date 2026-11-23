@@ -19,5 +19,3 @@ Plots and patch maps from the IDSE experiments. The main results are discussed i
 | [router_evaluation.png](router_evaluation.png) | Evaluation plots for the adaptive router comparison. |
 | [router_weight_distribution.png](router_weight_distribution.png) | Distribution of the learned adaptive-router weights. |
 | [router_weights.png](router_weights.png) | Adaptive-router weights across experts. |
-
-The patch maps use image patches positioned by their slide coordinates. Their markings refer to whole patches, not pixel-level segmentation.
