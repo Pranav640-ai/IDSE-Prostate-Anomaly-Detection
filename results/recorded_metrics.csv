@@ -1,0 +1,6 @@
+method,within_slide_auroc,end_to_end_auroc,g5_detected,g5_total
+Phikon kNN,0.7961,0.8816,26,179
+ResNet18 kNN,0.5317,0.8862,23,179
+Texture kNN,0.4672,0.8923,8,179
+Equal-weight fusion,0.5666,0.8844,18,179
+Adaptive router,0.6544,0.8782,23,179
