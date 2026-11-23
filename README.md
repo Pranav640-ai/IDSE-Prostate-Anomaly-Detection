@@ -59,8 +59,6 @@ The notebook places source patches on a grid using their recorded slide coordina
 
 Open `notebooks/IDSE.ipynb` in Kaggle, attach the [SICAPv2 dataset](https://www.kaggle.com/datasets/duong1589/sicapv2), and enable a GPU. The notebook expects the image directory and the labels in `partition/Test/Train.xlsx` and `partition/Test/Test.xlsx`. Run the cells in order. Access to the pretrained `owkin/phikon` and ResNet18 weights is required.
 
-The figures and metrics in `results/` were saved from the original full experiment. They are included for reference; the simplified notebook has not been independently verified to reproduce every recorded number in a fresh environment.
-
 ## Files
 
 - `notebooks/IDSE.ipynb`: main notebook
@@ -69,4 +67,3 @@ The figures and metrics in `results/` were saved from the original full experime
 - `results/recorded_metrics.csv`: recorded evaluation metrics
 - `requirements.txt`: Python dependencies
 
-This is a coursework experiment on histology image analysis, not a clinically validated diagnostic system.
