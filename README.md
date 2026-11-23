@@ -1,31 +1,72 @@
 # IDSE: Prostate Tissue Anomaly Detection
 
-This project tests a two-stage method for finding unfamiliar tissue patterns in prostate histology images. It uses the SICAPv2 dataset, with NC, G3 and G4 as known classes and G5 held out for evaluation.
+This project uses SICAPv2 prostate histology patches to test a two-stage method for detecting unfamiliar tissue patterns. NC, G3 and G4 are treated as known classes. G5 is held out for evaluation.
 
-Stage 1 measures nuclear and tissue-structure features from 256 × 256 patches. The measurements are compared with known-grade reference distributions using Mahalanobis distance. Patch scores are averaged for each slide to decide which slides need further checking.
+## Method
 
-Stage 2 uses frozen Phikon embeddings and cosine-distance 5-nearest-neighbour search against separate known-grade reference banks. A patch is marked only when its slide passes Stage 1 and its Phikon score exceeds the calibration threshold. ResNet18, texture features and score fusion were also evaluated for comparison.
+Stage 1 screens slides using measurements of nuclei and tissue structure. We calculate class-wise Mahalanobis distances, keep the closest known-class distance for each feature group, and combine the nuclear and architecture scores. Patch scores are averaged to obtain a slide score.
+
+Stage 2 uses frozen Phikon embeddings. Each patch is compared with five nearest neighbours in separate NC, G3 and G4 reference sets using cosine distance. A final patch alert requires both a positive Stage 1 slide decision and a Phikon score above the calibration threshold.
+
+```mermaid
+flowchart LR
+    A["SICAPv2 image patches"] --> B["Nuclear and architecture features"]
+    B --> C["Stage 1: slide screening"]
+    C --> D{"Slide selected?"}
+    D -->|Yes| E["Phikon embeddings"]
+    E --> F["5-NN anomaly score"]
+    F --> G["Patch alerts"]
+    D -->|No| H["No patch alerts"]
+```
+
+![Two-stage system overview](results/figures/system_overview.png)
+
+## Dataset
+
+We used [SICAPv2 on Kaggle](https://www.kaggle.com/datasets/duong1589/sicapv2). The original dataset publication is also available on [Mendeley Data](https://data.mendeley.com/datasets/9xxm58dvs3/2).
+
+The experiment uses image files and the accompanying `Train.xlsx` and `Test.xlsx` labels. Patches from the same slide are kept together when splitting known-grade training, validation and calibration data. G5 is not used to fit the reference models.
+
+![Labelled patches by data split](results/figures/dataset_splits.png)
+
+## Results
+
+The recorded full experiment gave these results:
+
+| Evaluation | Result |
+| --- | ---: |
+| Stage 1 slide AUROC (29 eligible slides) | 0.9833 |
+| Stage 1 slide accuracy | 89.66% |
+| Phikon within-slide AUROC (six mixed slides) | 0.7961 |
+| End-to-end Stage 1 + Phikon AUROC (1,404 patches) | 0.8816 |
+| G5 patches flagged at the final threshold | 26 / 179 |
+
+![Stage 1 evaluation](results/figures/stage1_evaluation.png)
+
+![Stage 1 and Phikon evaluation](results/figures/stage1_phikon_evaluation.png)
+
+We compared Phikon with ResNet18, handcrafted texture features, equal-weight score fusion and an adaptive router. Phikon had the highest within-slide AUROC and detected the most G5 patches at the recorded thresholds, so we used it for the final patch detector.
+
+![Stage 2 expert comparison](results/figures/expert_comparison.png)
+
+## Slide visualization
+
+The notebook places source patches on a grid using their recorded slide coordinates. The overlays show patch scores and detections, rather than pixel-level tissue boundaries.
+
+![Example patch-level results](results/figures/slide_example_1.png)
+
+## Running the code
+
+Open `notebooks/IDSE.ipynb` in Kaggle, attach the [SICAPv2 dataset](https://www.kaggle.com/datasets/duong1589/sicapv2), and enable a GPU. The notebook expects the image directory and the labels in `partition/Test/Train.xlsx` and `partition/Test/Test.xlsx`. Run the cells in order. Access to the pretrained `owkin/phikon` and ResNet18 weights is required.
+
+The figures and metrics in `results/` were saved from the original full experiment. They are included for reference; the simplified notebook has not been independently verified to reproduce every recorded number in a fresh environment.
 
 ## Files
 
-- `notebooks/IDSE.ipynb`: main experiment and saved outputs
-- `results/recorded_metrics.csv`: results from the full experiment
-- `results/README.md`: how to interpret the saved results
+- `notebooks/IDSE.ipynb`: main notebook
+- `report/IDSE_report.pdf`: project report
+- `results/figures/`: plots and patch visualizations from the full experiment
+- `results/recorded_metrics.csv`: recorded evaluation metrics
 - `requirements.txt`: Python dependencies
 
-## Running
-
-Use Kaggle with SICAPv2 attached as an input dataset. The code expects the original image directory and the `partition/Test/Train.xlsx` and `partition/Test/Test.xlsx` label files. Run the notebook cells in order, with a GPU enabled for image embeddings. Model weights for `owkin/phikon` and pretrained ResNet18 must be available.
-
-The notebook contains results saved from the original experiment. Those saved outputs are not a separate verification of reproducibility in a fresh environment.
-
-## Reported results
-
-Stage 1 reached 0.9833 AUROC on 29 eligible test slides, correctly classifying 26. Phikon reached 0.7961 within-slide AUROC on the six mixed slides used for that analysis. The complete Stage 1 + Phikon system reached 0.8816 end-to-end AUROC across 1,404 test patches and detected 26 of 179 G5 patches at the chosen threshold.
-
-These are experiment results, not clinical validation. The system highlights patches for review; it does not identify exact tumour boundaries.
-
-## References
-
-- [SICAPv2 dataset](https://data.mendeley.com/datasets/9xxm58dvs3/2)
-- [Phikon model](https://huggingface.co/owkin/phikon)
+This is a coursework experiment on histology image analysis, not a clinically validated diagnostic system.
