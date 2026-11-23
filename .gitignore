@@ -1,9 +1,0 @@
-__pycache__/
-.ipynb_checkpoints/
-*.pyc
-*.joblib
-*.npy
-*.npz
-IDS_results/
-data/
-dataset/
